@@ -99,14 +99,28 @@ int getCellOrder (vector <vector<int>> array, vector<zeroCells>& zerocells, int 
     return NULL;
 }
 
-void remainVectorValue (vector<zeroCells>& zerocells, int cellOrder, int remainIndex){
+void remainVectorIndex (vector<zeroCells>& zerocells, int cellOrder, int remainIndex){
     for (int k=0; k< zerocells[cellOrder].possibleValues.size(); k++)
-        if (zerocells[cellOrder].possibleValues[k] != zerocells[cellOrder].possibleValues[remainIndex]){
+        if (zerocells[cellOrder].possibleValues[k] != zerocells[cellOrder].possibleValues[remainIndex])
             zerocells[cellOrder].possibleValues[k]=0;
-        }
 }
 
-void eliminateCellValues(vector <vector<int>> array, vector<zeroCells>& zerocells, int rowNum, int columnNum){
+void deleteVectorValue (vector<zeroCells>& zerocells, int cellOrder, int deleteValue){
+    for (int k=0; k< zerocells[cellOrder].possibleValues.size(); k++)
+        if (zerocells[cellOrder].possibleValues[k] == deleteValue)
+            zerocells[cellOrder].possibleValues.erase(zerocells[cellOrder].possibleValues.begin() + k);
+}
+
+/*void delCellValuesFromExpectedRandC (vector <vector<int>> array, vector<zeroCells>& zerocells){
+    int sqrtmaxSize = sqrt(maxSize);
+    for (int bigRow=0; bigRow< sqrtmaxSize; bigRow++)
+        for (int bigColumn=0; bigColumn< sqrtmaxSize; bigColumn++)
+            for (int smallRow=0; smallRow< sqrtmaxSize; smallRow++)
+                for (int smallColumn=0; smallColumn< sqrtmaxSize; smallColumn++)
+                    
+}*/
+
+void delCellValuesFromCell (vector <vector<int>> array, vector<zeroCells>& zerocells, int rowNum, int columnNum){
     int columnBigCell=0;
     int rowBigCell=0;
     int sqrtmaxSize = sqrt(maxSize);
@@ -128,7 +142,7 @@ void eliminateCellValues(vector <vector<int>> array, vector<zeroCells>& zerocell
                             count++;
                 }
         if (count == 0)
-            remainVectorValue(zerocells, mainCellOrder, checkingIndex);
+            remainVectorIndex(zerocells, mainCellOrder, checkingIndex);
     }
     
     for (int index=0; index< zerocells[mainCellOrder].possibleValues.size(); index++)
@@ -145,6 +159,7 @@ int main(int argc, const char * argv[]) {
     vector <vector<int>> puzzleArray;
     cout << "Insert matrix:" << endl;
     puzzleArray = arrayInsert();
+    auto start = chrono::high_resolution_clock::now();
     vector <zeroCells> zerocells;
     while (noZeroIn(puzzleArray)==false){
         for (int row=0; row< maxSize; row++)
@@ -154,7 +169,7 @@ int main(int argc, const char * argv[]) {
         for (int row=0; row< maxSize; row++)
             for (int column=0; column< maxSize; column++)
                 if (puzzleArray[row][column] == 0)
-                    eliminateCellValues(puzzleArray, zerocells, row, column);
+                    delCellValuesFromCell(puzzleArray, zerocells, row, column);
         for (int row=0; row< maxSize; row++)
             for (int column=0; column< maxSize; column++)
                 if (puzzleArray[row][column] == 0)
@@ -168,13 +183,15 @@ int main(int argc, const char * argv[]) {
             cout << endl;
         }*/
     }
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
     cout << "Solved matrix:" << endl;
     for (int row=0; row<maxSize; row++){
         for (int column=0; column< maxSize; column++)
             cout << puzzleArray[row][column] << '\t';
         cout << endl;
     }
-    
+    cout << "Time taken by execution: "<< duration.count() << " microseconds" << endl;
     return 0;
 }
 /*
